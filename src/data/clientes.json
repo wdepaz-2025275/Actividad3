@@ -1,0 +1,32 @@
+[
+  {
+    "id": 101,
+    "nombre": "Carlos Mendoza",
+    "email": "cmendoza@kinal.edu.gt",
+    "activo": true
+  },
+  {
+    "id": 102,
+    "nombre": "Alejandra Gomez",
+    "email": "alegomez@gmail.com",
+    "activo": false
+  },
+  {
+    "id": 103,
+    "nombre": "Juan Pablo Perez",
+    "email": "jpperez@kinal.edu.gt",
+    "activo": true
+  },
+  {
+    "id": 104,
+    "nombre": "Maria Fernanda Lopez",
+    "email": "marifer.lopez@yahoo.com",
+    "activo": true
+  },
+  {
+    "id": 105,
+    "nombre": "Luis Antonio Rodas",
+    "email": "lrodas@hotmail.com",
+    "activo": false
+  }
+]

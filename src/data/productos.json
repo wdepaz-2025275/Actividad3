@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "nombre": "Laptop HP Pavilion",
+    "precio": 6500.5,
+    "stock": 10
+  },
+  {
+    "id": 2,
+    "nombre": "Mouse Optico USB",
+    "precio": 75.0,
+    "stock": 25
+  },
+  {
+    "id": 3,
+    "nombre": "Teclado Mecanico RGB",
+    "precio": 350.0,
+    "stock": 15
+  },
+  {
+    "id": 4,
+    "nombre": "Monitor Gamer 24''",
+    "precio": 1499.99,
+    "stock": 8
+  },
+  {
+    "id": 5,
+    "nombre": "Impresora Canon Pixma",
+    "precio": 450.0,
+    "stock": 5
+  }
+]
