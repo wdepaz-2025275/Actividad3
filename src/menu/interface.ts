@@ -2,108 +2,104 @@ import { Producto } from '../models/producto';
 import { Cliente } from '../models/cliente';
 import { hacerPregunta, rl } from '../utils/readline';
 import { validarProducto, validarCliente } from '../utils/validators';
-import { guardarEnArchivo, leerDesdeArchivo } from '../services/persistence.service';
 
-const archivoProductos = 'productos.json';
-const archivoClientes = 'clientes.json';
+const listaProductos: Producto[] = [];
+const listaClientes: Cliente[] = [];
 
 export async function mostrarMenuPrincipal() {
-    console.log('\n--- MENÚ DEL SISTEMA ---');
-    console.log('1. Registrar un Producto');
-    console.log('2. Ver Productos Guardados');
-    console.log('3. Registrar un Cliente');
-    console.log('4. Ver Clientes Guardados');
-    console.log('5. Salir');
-    
-    const opcion = await hacerPregunta('Selecciona una opción (1-5): ');
+    let salir = false;
 
-    if (opcion === '1') {
-        console.log('\n--- NUEVO PRODUCTO ---');
-        try {
-            const idInput = await hacerPregunta('Ingresa el ID del producto: ');
-            const nombreInput = await hacerPregunta('Ingresa el Nombre: ');
-            const precioInput = await hacerPregunta('Ingresa el Precio: ');
-            const stockInput = await hacerPregunta('Ingresa el Stock inicial: ');
-
-            const nuevoProd: Producto = {
-                id: parseInt(idInput),
-                nombre: nombreInput,
-                precio: parseFloat(precioInput),
-                stock: parseInt(stockInput)
-            };
-
-            validarProducto(nuevoProd);
-
-            const listaActual = await leerDesdeArchivo(archivoProductos);
-            listaActual.push(nuevoProd); 
-
-            await guardarEnArchivo(archivoProductos, listaActual);
-            console.log('¡Producto registrado y guardado con éxito!');
-
-        } catch (error: any) {
-            console.log('No se pudo guardar: ' + error.message);
-        }
+    while (!salir) {
+        console.log('\n|------------------------------------|');
+        console.log('|            MENÚ PRINCIPAL            |');
+        console.log('|--------------------------------------|');
+        console.log('| 1. Registrar Producto                |');
+        console.log('| 2. Ver Productos                     |');
+        console.log('| 3. Registrar Cliente                 |');
+        console.log('| 4. Ver Clientes                      |');
+        console.log('| 5. Salir                             |');
+        console.log('|--------------------------------------|');
         
-        await mostrarMenuPrincipal();
+        const opcion = await hacerPregunta('Selecciona una opción: ');
 
-    } else if (opcion === '2') {
-        console.log('\n--- LISTA DE PRODUCTOS ---');
-        const productos = await leerDesdeArchivo(archivoProductos);
-        
-        if (productos.length === 0) {
-            console.log('No hay productos registrados en el archivo.');
-        } else {
-            console.log(JSON.stringify(productos, null, 2));
+        switch (opcion.trim()) {
+            case '1':
+                console.log('\n Registrar Producto');
+                try {
+                    const id = await hacerPregunta('ID: ');
+                    const nombre = await hacerPregunta('Nombre: ');
+                    const precio = await hacerPregunta('Precio: ');
+                    const stock = await hacerPregunta('Stock: ');
+
+                    const nuevoProd: Producto = {
+                        id: parseInt(id),
+                        nombre,
+                        precio: parseFloat(precio),
+                        stock: parseInt(stock)
+                    };
+
+                    validarProducto(nuevoProd);
+                    
+                    if (listaProductos.some(p => p.id === nuevoProd.id)) {
+                        console.log(`¡Error! El ID ${nuevoProd.id} ya existe.`);
+                        break;
+                    }
+
+                    listaProductos.push(nuevoProd); 
+                    console.log('Producto registrado.');
+                } catch (err: any) {
+                    console.error('Error:', err.message);
+                }
+                break;
+
+            case '2':
+                console.log('\n Productos Registrados');
+                console.log(listaProductos.length ? listaProductos : 'No hay datos.');
+                break;
+
+            case '3':
+                console.log('\n Registrar Cliente');
+                try {
+                    const id = await hacerPregunta('ID: ');
+                    const nombre = await hacerPregunta('Nombre y Apellido: ');
+                    const email = await hacerPregunta('Email: ');
+                    const activo = await hacerPregunta('¿Activo? (si/no): ');
+
+                    const nuevoCliente: Cliente = {
+                        id: parseInt(id),
+                        nombre,
+                        email,
+                        activo: activo.toLowerCase().startsWith('s') 
+                    };
+
+                    validarCliente(nuevoCliente);
+                    
+                    if (listaClientes.some(c => c.id === nuevoCliente.id)) {
+                        console.log(`¡Error! El ID ${nuevoCliente.id} ya existe.`);
+                        break;
+                    }
+
+                    listaClientes.push(nuevoCliente);
+                    console.log('Cliente registrado.');
+                } catch (err: any) {
+                    console.error('Error:', err.message);
+                }
+                break;
+
+            case '4':
+                console.log('\n Clientes Registrados');
+                console.log(listaClientes.length ? listaClientes : 'No hay datos.');
+                break;
+
+            case '5':
+                console.log('Cerrando programa.');
+                rl.close();
+                salir = true;
+                break;
+
+            default:
+                console.log('Opción no válida.');
+                break;
         }
-        
-        await mostrarMenuPrincipal();
-
-    } else if (opcion === '3') {
-        console.log('\n--- NUEVO CLIENTE ---');
-        try {
-            const idInput = await hacerPregunta('Ingresa el ID del cliente: ');
-            const nombreInput = await hacerPregunta('Ingresa el Nombre completo: ');
-            const emailInput = await hacerPregunta('Ingresa el Correo Electrónico: ');
-            const activoInput = await hacerPregunta('¿El cliente está activo? (si/no): ');
-
-            const nuevoCliente: Cliente = {
-                id: parseInt(idInput),
-                nombre: nombreInput,
-                email: emailInput,
-                activo: activoInput.toLowerCase() === 'si' 
-            };
-
-            validarCliente(nuevoCliente);
-
-            const listaActualClientes = await leerDesdeArchivo(archivoClientes);
-            listaActualClientes.push(nuevoCliente);
-
-            await guardarEnArchivo(archivoClientes, listaActualClientes);
-            console.log('¡Cliente registrado y guardado con éxito!');
-
-        } catch (error: any) {
-            console.log('No se pudo guardar: ' + error.message);
-        }
-
-        await mostrarMenuPrincipal();
-
-    } else if (opcion === '4') {
-        console.log('\n--- LISTA DE CLIENTES ---');
-        const clientes = await leerDesdeArchivo(archivoClientes);
-
-        if (clientes.length === 0) {
-            console.log('No hay clientes registrados en el archivo.');
-        } else {
-            console.log(JSON.stringify(clientes, null, 2));
-        }
-
-        await mostrarMenuPrincipal();
-
-    } else if (opcion === '5') {
-        console.log('Cerrando el programa. ¡Adiós!');
-        rl.close(); 
-    } else {
-        console.log('Opción incorrecta, intenta de nuevo.');
-        await mostrarMenuPrincipal();
     }
 }
